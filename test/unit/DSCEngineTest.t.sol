@@ -11,11 +11,9 @@ import {StdCheats} from "forge-std/StdCheats.sol";
 import {IERC20} from "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {ERC20Mock} from "@openzeppelin/contracts/mocks/ERC20Mock.sol";
 import {ERC20Burnable, ERC20} from "lib/openzeppelin-contracts/contracts/token/ERC20/extensions/ERC20Burnable.sol";
-import { MockFailedMintDSC } from "../mocks/MockFailedMintDSC.sol";
-import { MockMoreDebtDSC } from "../mocks/MockMoreDebtDSC.sol";
-import { MockV3Aggregator } from "../mocks/MockV3Aggregator.sol";
-
-
+import {MockFailedMintDSC} from "../mocks/MockFailedMintDSC.sol";
+import {MockMoreDebtDSC} from "../mocks/MockMoreDebtDSC.sol";
+import {MockV3Aggregator} from "../mocks/MockV3Aggregator.sol";
 
 contract DSCEngineTest is StdCheats, Test {
     DSCEngine public dscEngine;
@@ -233,14 +231,22 @@ contract DSCEngineTest is StdCheats, Test {
         priceFeedAddresses = [wethUsdPriceFeed];
         address owner = msg.sender;
         vm.prank(owner);
-        DSCEngine mockDsce = new DSCEngine(tokenAddresses, priceFeedAddresses, address(mockDsc));
+        DSCEngine mockDsce = new DSCEngine(
+            tokenAddresses,
+            priceFeedAddresses,
+            address(mockDsc)
+        );
         mockDsc.transferOwnership(address(mockDsce));
         // Arrange - User
         vm.startPrank(USER);
         ERC20Mock(weth).approve(address(mockDsce), STARTING_COLLATERAL_BALANCE);
 
         vm.expectRevert(DSCEngine.DSCEngine__MintFailed.selector);
-        mockDsce.depositCollateralAndMintDsc(weth, STARTING_COLLATERAL_BALANCE, AMOUNT_DSC_MINTED);
+        mockDsce.depositCollateralAndMintDsc(
+            weth,
+            STARTING_COLLATERAL_BALANCE,
+            AMOUNT_DSC_MINTED
+        );
         vm.stopPrank();
     }
 
@@ -314,7 +320,7 @@ contract DSCEngineTest is StdCheats, Test {
         dscEngine.mintDsc(zeroDscMinted);
     }
 
-    function testSuccessfulMint() external collateralDeposited{
+    function testSuccessfulMint() external collateralDeposited {
         vm.prank(USER);
         dscEngine.mintDsc(AMOUNT_DSC_MINTED);
 
@@ -327,7 +333,6 @@ contract DSCEngineTest is StdCheats, Test {
     // Burn DSC Tests
     /////////////////
 
-
     function testBurnDscWorks() external DscMinted {
         uint256 userInitialMintedDscBalance = dscEngine.getTotalDscMinted(USER);
 
@@ -339,8 +344,6 @@ contract DSCEngineTest is StdCheats, Test {
         //  approve(address spender, uint256 amount)
         // address owner = _msgSender();
         // _approve(owner, spender, amount);
-
-        // 
 
         dsc.approve(address(dscEngine), AMOUNT_DSC_MINTED);
 
@@ -771,16 +774,18 @@ contract DSCEngineTest is StdCheats, Test {
         // But first check is that the liquidated users Health factor is OK or not before liquidating
         uint256 userHealthFactor = dscEngine.getHealthFactor(USER);
 
-        console.log("User about to be liquidated has OK health factor of ", userHealthFactor);
+        console.log(
+            "User about to be liquidated has OK health factor of ",
+            userHealthFactor
+        );
         vm.prank(LIQUIDATOR);
         vm.expectRevert(DSCEngine.DSCEngine__HealthFactorOk.selector);
         dscEngine.liquidate(weth, USER, STARTING_COLLATERAL_BALANCE);
     }
 
-    function testLiquidateRevertsWhenLiquidatorHasBrokenHealthFactor() external {
-
-        
-
+    function testLiquidateRevertsWhenLiquidatorHasBrokenHealthFactor()
+        external
+    {
         // vm.prank(LIQUIDATOR);
         // ERC20Mock(weth).approve(
         //     address(dscEngine),
@@ -818,19 +823,18 @@ contract DSCEngineTest is StdCheats, Test {
         address to = LIQUIDATOR;
         uint256 amountDsc = dscEngine.getTotalDscMinted(USER);
         vm.prank(USER);
-        IERC20(dsc).transfer(
-            to,
-            amountDsc
-        );
+        IERC20(dsc).transfer(to, amountDsc);
 
-        
         uint256 userHealthFactor = dscEngine.getHealthFactor(LIQUIDATOR);
 
-        console.log("Liquidator has broken health factor of ", userHealthFactor);
+        console.log(
+            "Liquidator has broken health factor of ",
+            userHealthFactor
+        );
         vm.prank(LIQUIDATOR);
         vm.expectRevert();
         dscEngine.liquidate(weth, USER, STARTING_COLLATERAL_BALANCE);
-    }    
-    // testLiquidateSuccessfullWithBrokenHealthFactor (also checks that the liquifdated users health factor is improved.   or not improved)
-    //
+    }
+
+    // Need some fuzz test. Lord!
 }

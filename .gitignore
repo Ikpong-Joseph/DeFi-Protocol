@@ -2,3 +2,4 @@
 lib/
 cache/
 out/
+node_modules/

@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "forge-std/Test.sol";
-import "script/HelperConfig.s.sol";
-import "../mocks/MockV3Aggregator.sol";
-import "@openzeppelin/contracts/mocks/ERC20Mock.sol";
+import {Test} from "forge-std/Test.sol";
+import {HelperConfig } from "script/HelperConfig.s.sol";
+import {MockV3Aggregator} from "../mocks/MockV3Aggregator.sol";
+import {ERC20Mock} from"@openzeppelin/contracts/mocks/ERC20Mock.sol";
 import { StdCheats } from "forge-std/StdCheats.sol";
 
 

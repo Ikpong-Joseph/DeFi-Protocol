@@ -40,7 +40,7 @@ contract DecentralisedStableCoin is ERC20Burnable, Ownable{
     * Collateral Type: Crypto
     *
     * This will be owned by DSCEngine. It is a ERC20 token that can be minted and burned by the
-    DSCEngine smart contract logic.
+        DSCEngine smart contract logic.
     */
 
     // We're using the ERC20Burnable contract because of its burn function.

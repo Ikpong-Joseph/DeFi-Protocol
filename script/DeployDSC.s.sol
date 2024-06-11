@@ -10,6 +10,8 @@ contract DeployDSC is Script {
     address[] public tokenAddresses;
     address[] public priceFeedAddresses;
 
+    // Run this script to power whole protocol
+
     function run() external returns (DecentralisedStableCoin, DSCEngine, HelperConfig) {
         HelperConfig helperConfig = new HelperConfig(); // This comes with our mocks!
 
@@ -19,6 +21,7 @@ contract DeployDSC is Script {
         priceFeedAddresses = [wethUsdPriceFeed, wbtcUsdPriceFeed]; //setting priceFeedAddress[] for dscEngine constructor sequentially for each corresponding token in tokenAddresses[]
 
         vm.startBroadcast(deployerKey);
+        // Powering up each of the contracts
         DecentralisedStableCoin dsc = new DecentralisedStableCoin();
         DSCEngine dscEngine = new DSCEngine(tokenAddresses, priceFeedAddresses, address(dsc));
         dsc.transferOwnership(address(dscEngine));

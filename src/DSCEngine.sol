@@ -48,7 +48,7 @@ using OracleLib for AggregatorV3Interface; // Never Forget to declare types!!
  * @author Ikpong Joseph
  *
  * The system is designed to be as minimal as possible, and have the tokens maintain a 1 DSC token == $1 peg at all times.
- * This is a stablecoin with the properties:
+ * This is a stablecoin that is:
  * - Exogenously Collateralized
  * - Dollar Pegged
  * - Algorithmically Stable
@@ -57,7 +57,7 @@ using OracleLib for AggregatorV3Interface; // Never Forget to declare types!!
  *
  * Our DSC system should always be "overcollateralized". At no point, should the value of
  * all collateral < the $ backed value of all the DSC. Else that user gets liquidated.
- * Another user pays off the DSC token the undercollateralized user held, and in return gets his depositeed collateral.
+ * Another user is then ooportuned to pay off the DSC token the undercollateralized user held, and in return gets users deposited collateral.
  *
  * @notice This contract is the core of the Decentralized Stablecoin system. It handles all the logic
  * for minting and redeeming DSC, as well as depositing and withdrawing collateral.
@@ -85,7 +85,7 @@ contract DSCEngine is ReentrancyGuard {
 
     DecentralisedStableCoin private immutable i_dsc;
 
-    /// @dev Mapping of token address to price feed address
+    /// @dev Mapping of collatera token address to price feed address
     mapping(address collateralToken => address priceFeed) private s_priceFeeds;
     /// @dev Amount of collateral deposited by user by mapping user address to the mapping of collarteral token addreess to amount
     mapping(address user => mapping(address collateralToken => uint256 amount))
@@ -125,6 +125,7 @@ contract DSCEngine is ReentrancyGuard {
     // Modifiers
     ///////////////////
     modifier moreThanZero(uint256 amount) {
+        // Ensures that zero amounts are not transferred during a function call
         if (amount == 0) {
             revert DSCEngine__NeedsMoreThanZero();
         }
@@ -132,6 +133,7 @@ contract DSCEngine is ReentrancyGuard {
     }
 
     modifier isAllowedToken(address collateralToken) {
+        // To check that a token is an allowed collateral token
         if (s_priceFeeds[collateralToken] == address(0)) {
             revert DSCEngine__TokenNotAllowed(collateralToken);
         }
@@ -147,6 +149,9 @@ contract DSCEngine is ReentrancyGuard {
         address[] memory priceFeedAddresses,
         address dscAddress
     ) {
+        // Check to ensure each collateral token has a corresponding price feed address
+        // It doesn't necessarily check that the price feed addresses are for the respective collateral token
+        // Can it be done?
         if (collateralTokenAddresses.length != priceFeedAddresses.length) {
             revert DSCEngine__TokenAddressesAndPriceFeedAddressesAmountsDontMatch();
         }
@@ -299,7 +304,7 @@ contract DSCEngine is ReentrancyGuard {
     ///////////////////
     /*
      * @param amountDscToMint: The amount of DSC you want to mint
-     * You can only mint DSC if you hav enough collateral
+     * You can only mint DSC if you have enough collateral
      */
     function mintDsc(
         uint256 amountDscToMint
@@ -447,7 +452,7 @@ contract DSCEngine is ReentrancyGuard {
     /**
     * This calculates users health factor
     * Checks _healthFactor(user)
-    * Houses mandatory check and error if users health is less than MIN
+    * Houses mandatory check and error if users health is less than MIN_HEALTH_FACTOR
     */
 
     function revertIfHealthFactorIsBroken(address user) internal view {
@@ -462,6 +467,7 @@ contract DSCEngine is ReentrancyGuard {
     // External & Public View & Pure Functions
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
+    
     function calculateHealthFactor(
         uint256 totalDscMinted,
         uint256 collateralValueInUsd
