@@ -56,6 +56,8 @@ The DSC token is managed by the **DSCEngine** smart contract, which is responsib
     forge script <script> --rpc-url <rpc_url> --account <account_name> --sender <address> --broadcast
     ```
 
+    This `address` will be the public key of the private key you've just encrypted.
+
     In this case, as the `address` args after `--sender`
     
     Watch how: [Cyfrin Audits](https://www.youtube.com/watch?v=VQe7cIpaE54)
@@ -76,6 +78,20 @@ The DSC token is managed by the **DSCEngine** smart contract, which is responsib
             
         });
     ```
+   **UPDATE**
+   Fianlly found a way to do this thanks to Rafael Quintero. Here's what you have to do:
+   1. Store the path to your encrypted key in your `.env` as such
+      ```
+      ETH_KEYSTORE_ACCOUNT=~/.foundry/keystores/defiProtocol2.json
+      ```
+      To find the path to your encrpted key, run ```cd .foundry/keystores/``` in your home directory. Once in `ls` to view encrypted keys. Concatenate it like for `ETH_KEYSTORE_ACCOUNT` and add a .json
+      
+   2. Check myyyy `HelperConfig.s.sol` and `DeployDSC.s.sol` to see how the codes were refactored.
+   3. Run your deploy with
+      ```
+      forge script script/DeployDSC.s.sol:DeployDSC --fork-url $SEPOLIA --account defiProtocol2 --sender <public-key-of-encrypted-private-key>  --broadcast 
+      ```
+   4. 
 
 ## Author
 

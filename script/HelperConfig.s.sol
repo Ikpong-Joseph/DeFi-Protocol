@@ -3,11 +3,11 @@ pragma solidity ^0.8.19;
 
 import { MockV3Aggregator } from "../test/mocks/MockV3Aggregator.sol";
 import { Script } from "forge-std/Script.sol";
-import { ERC20Mock } from "lib/openzeppelin-contracts/contracts/mocks/token/ERC20Mock.sol";
+import { ERC20Mock } from "@openzeppelin/contracts/mocks/ERC20Mock.sol";
 
 contract HelperConfig is Script {
     NetworkConfig public activeNetworkConfig;
-    NetworkCon public activeNetworkConfigs;
+    NetworkConfigSepolia public activeNetworkConfigSepolia;
 
     uint8 public constant DECIMALS = 8;
     int256 public constant ETH_USD_PRICE = 2000e8;
@@ -21,7 +21,7 @@ contract HelperConfig is Script {
         uint256 deployerKey;
     }
 
-    struct NetworkCon {
+    struct NetworkConfigSepolia {
         address wethUsdPriceFeed;
         address wbtcUsdPriceFeed;
         address weth;
@@ -33,14 +33,14 @@ contract HelperConfig is Script {
 
     constructor() {
         if (block.chainid == 11155111) {
-            activeNetworkConfigs = getSepoliaEthConfig();
+            activeNetworkConfigSepolia = getSepoliaEthConfig();
         } else {
             activeNetworkConfig = getOrCreateAnvilEthConfig();
         }
     }
 
-    function getSepoliaEthConfig() public view returns (NetworkCon memory sepoliaNetworkConfig) {
-        sepoliaNetworkConfig = NetworkCon({
+    function getSepoliaEthConfig() public view returns (NetworkConfigSepolia memory sepoliaNetworkConfig) {
+        sepoliaNetworkConfig = NetworkConfigSepolia({
             wethUsdPriceFeed: 0x694AA1769357215DE4FAC081bf1f309aDC325306, // ETH / USD https://docs.chain.link/data-feeds/price-feeds/addresses?network=ethereum&page=1
             wbtcUsdPriceFeed: 0x1b44F3514812d835EB1BDB0acB33d3fA3351Ee43, // BTC / USD https://docs.chain.link/data-feeds/price-feeds/addresses?network=ethereum&page=1
             weth: 0xdd13E55209Fd76AfE204dBda4007C227904f0a81,
