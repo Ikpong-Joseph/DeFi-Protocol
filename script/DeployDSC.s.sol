@@ -15,8 +15,8 @@ contract DeployDSC is Script {
     function run() external returns (DecentralisedStableCoin, DSCEngine, HelperConfig) {
         HelperConfig helperConfig = new HelperConfig(); // This comes with our mocks!
 
-        (address wethUsdPriceFeed, address wbtcUsdPriceFeed, address weth, address wbtc, uint256 deployerKey) =
-            helperConfig.activeNetworkConfig(); // Setting the Helperconfig's activeNetworkConfig struct depending on detected chainId during deployment
+        (address wethUsdPriceFeed, address wbtcUsdPriceFeed, address weth, address wbtc, /*uint256*/string memory deployerKey) =
+            helperConfig.activeNetworkConfigs(); // Setting the Helperconfig's activeNetworkConfig struct depending on detected chainId during deployment
         tokenAddresses = [weth, wbtc]; //setting token[] for dscEngine constructor
         priceFeedAddresses = [wethUsdPriceFeed, wbtcUsdPriceFeed]; //setting priceFeedAddress[] for dscEngine constructor sequentially for each corresponding token in tokenAddresses[]
 
